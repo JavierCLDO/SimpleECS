@@ -17,6 +17,8 @@ void fen::Engine::run()
 {
 	profiler.start_timing<Steps_Enum::Init>();
 
+	test_create_unknown_comp();
+
 	// Initialize starting entities
 	while(!entities_to_add.empty())
 	{
@@ -92,4 +94,20 @@ void fen::Engine::run()
 	printf("Time spent on Init: %.3f %s\n", profiler.get_time<Steps_Enum::Init>(), profiler.unit());
 	printf("Avg Time spent on Update: %.3f %s\n", profiler.get_avg_time<Steps_Enum::Update>(), profiler.unit());
 	printf("Avg Time spent on Purge: %.3f %s\n", profiler.get_avg_time<Steps_Enum::Purge>(), profiler.unit());
+}
+
+void fen::Engine::test_create_unknown_comp()
+{
+	auto engine = fen::Engine::Instance();
+
+	auto& e = engine->add_entity();
+	e.set_erase_on_no_components(true);
+
+	//e.add_component<MyComponent>(); // Cannot add a component that the user defines (Im in the engine .lib!)
+
+	// Add a component that the user 'tells me' that it should exist
+	e.add_component("MyComponent_2");
+
+	// fen does find this component because it isn't created in the user code
+	e.add_component("MyComponent_22");
 }

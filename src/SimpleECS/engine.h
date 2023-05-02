@@ -54,6 +54,9 @@ private:
 
 	SimpleProfiler<Steps_Enum::ALL_, double, std::milli> profiler;
 
+	// Used to test that the engine can create a component for which it does not know how to make
+	void test_create_unknown_comp();
+
 protected:
 
 	void exit() { exit_ = true; }

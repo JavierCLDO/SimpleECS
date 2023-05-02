@@ -22,7 +22,7 @@ int main(void)
 {
 	fen::Engine::CreateInstance();
 
-	create_entities();
+	//create_entities();
 
 	fen::Engine::Instance()->run();
 
