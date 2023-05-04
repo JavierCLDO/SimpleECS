@@ -14,11 +14,7 @@ namespace fen
 class Entity
 {
 	friend class Engine; // Friend to protect user calling engine related functions (i.e: init, update, purge)
-
-	// Requires that D is derived from B and D != B
-	template <typename B, typename D>
-	using strictly_derived_check = std::enable_if_t< std::is_base_of_v<B, D> && !std::is_same_v<B, D>, bool >;
-
+	
 public:
 
 	Entity();
@@ -38,7 +34,7 @@ public:
 	/**
 	 * \brief Checks whether this entity has a component
 	 */
-	template<typename Comp, strictly_derived_check<Component, Comp> = true>
+	template<concepts::stricly_derived<Component> Comp>
 	[[nodiscard]] bool has_component() const
 	{
 		assert(Component::ID<Comp>() < comps.size());
@@ -48,7 +44,7 @@ public:
 	/**
 	 * \brief Adds a component to this entity using a component known at compilation time
 	 */
-	template<typename Comp, strictly_derived_check<Component, Comp> = true>
+	template<concepts::stricly_derived<Component> Comp>
 	void add_component()
 	{
 		const auto comp = ComponentFactory::Instance()->CreateComponent<Comp>();
@@ -82,7 +78,7 @@ public:
 	/**
 	 * \return A component if it has it. nullptr if it doesn't
 	 */
-	template <typename Comp, strictly_derived_check<Component, Comp> = true>
+	template<concepts::stricly_derived<Component> Comp>
 	[[nodiscard]] Comp* get_component() const
 	{
 		assert(Component::ID<Comp>() < comps.size());
@@ -92,7 +88,7 @@ public:
 	/**
 	 * \brief Marks a component for destruction after the update cycle
 	 */
-	template <typename Comp, strictly_derived_check<Component, Comp> = true>
+	template<concepts::stricly_derived<Component> Comp>
 	void destroy_component()
 	{
 		assert(Component::ID<Comp>() < comps.size());

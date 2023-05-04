@@ -5,6 +5,7 @@
 
 #include "singleton.h"
 #include "component.h"
+#include "component_concepts.h"
 
 namespace fen
 {
@@ -12,12 +13,7 @@ class ComponentFactory: public Singleton<ComponentFactory>
 {
 	friend Singleton;
 	friend class Engine;
-	 
 	friend class ComponentCreatorBase;
-
-	// Requires that D is derived from B and D != B
-	template <typename B, typename D>
-	using strictly_derived_check = std::enable_if_t< std::is_base_of_v<B, D> && !std::is_same_v<B, D>, bool >;
 
 protected:
 
@@ -37,7 +33,7 @@ public:
 	 * \tparam Comp The component type. Must derive from Component
 	 * \return Uses new!!! This class does NOT manage the deletion of the returned component
 	 */
-	template<class Comp, strictly_derived_check<Component, Comp> = true>
+	template<concepts::stricly_derived<Component> Comp>
 	[[nodiscard]] Comp* CreateComponent() const
 	{
 		return static_cast<Comp*>(create_component_Impl(Component::ID<Comp>()));

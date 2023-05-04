@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\SimpleECS\component.h" />
+    <ClInclude Include="..\src\SimpleECS\component_concepts.h" />
     <ClInclude Include="..\src\SimpleECS\component_creator.h" />
     <ClInclude Include="..\src\SimpleECS\component_factory.h" />
     <ClInclude Include="..\src\SimpleECS\engine.h" />

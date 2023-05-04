@@ -6,19 +6,22 @@
 
 #include "component.h"
 
+#include "component_concepts.h"
+
 namespace fen
 {
 	
 class ComponentCreatorBase
 {
 public:
+	ComponentCreatorBase() = default;
 	virtual ~ComponentCreatorBase() = default;
 	virtual Component* operator()() = 0;
 	[[nodiscard]] virtual std::uint32_t get_id() const = 0;
 	void add_factory(const std::uint32_t& id, const std::size_t str_id, ComponentCreatorBase* creator);
 };
 
-template<class Comp>
+template<concepts::stricly_derived<Component> Comp>
 class ComponentCreator : public ComponentCreatorBase
 {
 public:

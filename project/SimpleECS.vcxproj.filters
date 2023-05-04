@@ -57,5 +57,8 @@
     <ClInclude Include="..\src\SimpleECS\user_component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\SimpleECS\component_concepts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

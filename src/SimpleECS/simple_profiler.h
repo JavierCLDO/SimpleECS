@@ -6,9 +6,15 @@
 
 namespace fen
 {
+	namespace concepts
+	{
+		template <unsigned M, unsigned N> concept less_than = M < N;
+		template <unsigned M, unsigned N> concept less_eq_than = 0 < M && M <= N;
+		template <unsigned N, typename Precision, typename TimeRatio> concept valid_profiler = N > 0 && std::is_floating_point_v<Precision> && std::_Is_ratio_v<TimeRatio>;
+	}
 
-template<unsigned N, typename Precision, typename TimeRatio = std::ratio<1, 1>, // Default as seconds
-	typename = std::enable_if_t < std::is_floating_point_v<Precision> && std::_Is_ratio_v<TimeRatio> >>
+template<unsigned N, typename Precision, typename TimeRatio = std::ratio<1, 1>> // Default as seconds
+	requires concepts::valid_profiler<N, Precision, TimeRatio>
 class SimpleProfiler
 {
 private:
@@ -54,7 +60,8 @@ public:
 	 * \tparam M the timer
 	 * \param t_ time
 	 */
-	template<unsigned M, typename = std::enable_if_t<M < N>>
+	template<unsigned M>
+		requires concepts::less_than<M, N>
 	void add_time(const Precision& t_)
 	{
 		timers[M] += t_;
@@ -64,7 +71,8 @@ public:
 	 * \brief Starts timing M
 	 * \tparam M the timer
 	 */
-	template<unsigned M, typename = std::enable_if_t<M < N>>
+	template<unsigned M>
+		requires concepts::less_than<M, N>
 	void start_timing(void)
 	{
 		timings[M] = hr_clock::now();
@@ -74,7 +82,8 @@ public:
 	 * \brief Ends timing M
 	 * \tparam M the timer
 	 */
-	template<unsigned M, typename = std::enable_if_t<M < N>>
+	template<unsigned M>
+		requires concepts::less_than<M, N>
 	void finish_timing(void)
 	{
 		add_time<M>(duration_cast(hr_clock::now() - timings[M]).count());
@@ -170,7 +179,8 @@ public:
 	 * \param args arguments to forward the functor
 	 * \return If the functor returns something, it returns that. Else it returns void
 	 */
-	template <unsigned M, typename Func, typename ...Args, typename = std::enable_if_t<M < N>>
+	template <unsigned M, typename Func, typename ...Args>
+		requires concepts::less_than<M, N>
 	auto add_time(Func func, Args&&... args)
 	{
 		using FuncReturnType = decltype(func(std::forward<Args>(args)...));
@@ -202,7 +212,8 @@ public:
 		os << "total time: " << total << ' ' << unit() << '\n';
 	}
 
-	template<typename Enum = unsigned, unsigned M = N, typename = std::enable_if_t<0 < M && M <= N>>
+	template<typename Enum = unsigned, unsigned M = N>
+		requires concepts::less_eq_than<M, N>
 	void print_avg_times(std::ostream& os) const
 	{
 		assert(steps > 0 && step_before_msg);
@@ -239,11 +250,11 @@ public:
 	[[nodiscard]] const profiler_array& get_times(void) const noexcept { return timers; }
 	[[nodiscard]] const profiler_array& get_avg_times(void) const { assert(steps > 0 && step_before_msg); return avg_timers; }
 
-	template<unsigned M, typename = std::enable_if_t<M < N>>
+	template<unsigned M> requires concepts::less_than<M, N>
 	[[nodiscard]] const Precision& get_time(void) const noexcept { return timers[M]; }
 	[[nodiscard]] const Precision& get_time(unsigned m) const { assert(m < N&& m_less_than_n_msg); return timers[m]; }
 
-	template<unsigned M, typename = std::enable_if_t<M < N>>
+	template<unsigned M> requires concepts::less_than<M, N>
 	[[nodiscard]] const Precision& get_avg_time(void) const { assert(steps > 0 && step_before_msg); return avg_timers[M]; }
 	[[nodiscard]] const Precision& get_avg_time(unsigned m) const { assert(steps > 0 && step_before_msg); assert(m < N&& m_less_than_n_msg); return avg_timers[m]; }
 };
